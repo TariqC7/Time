@@ -1,0 +1,218 @@
+#include <iostream>
+#include <string>
+#include <stdlib.h>
+ 
+using namespace std;
+ 
+class Time
+{
+    private:
+        int hours;
+        int minutes;
+        void normalize();
+ 
+    public:
+        Time (int hours = 0, int minutes = 0);
+ 
+        Time Length(void) const;            // Time length
+        void CopyTime(Time* t) const;   // copy Time
+ 
+        // *****Stream I/O *****
+        // Write Times
+        friend ostream& operator<< (ostream& ostr, const Time& s);
+ 
+        // Read Times
+        friend istream& operator>> (istream& istr, Time& s);
+ 
+        // ***** relational operator *****
+        // Time == Time
+        int operator== (const Time& s) const;
+        // Time < Time
+        int operator< (const Time& s) const;
+        // Time > Time
+        int operator> (const Time& s) const;
+        // Time <= Time
+        int operator<= (const Time& s) const;
+        // Time >= Time
+        int operator>= (const Time& s) const;
+        // Time != Time
+        int operator!= (const Time& s) const;
+ 
+        // ***** Time Arithmetic operators ****
+        // ***** Time addition *****
+        Time operator+ (const Time& s) const;
+        // ***** Time subtraction *****
+        Time operator- (const Time& s) const;
+        // ***** Time mutiplication *****
+        Time operator* (int) const;
+        // ***** Time division *****
+        Time operator/ (int) const;
+};
+ 
+Time::Time (int h , int m): hours(h), minutes(m)
+{
+    while (minutes >= 60)
+    {
+        minutes = minutes - 60;
+        hours++;
+    }
+}
+ 
+ostream& operator<< (ostream& ostr, const Time& s)
+{
+    ostr << s.hours << ":" << s.minutes;
+    return ostr;
+}
+ 
+istream& operator>> (istream& istr, Time& s)
+{
+    char char1;
+    istr >> s.hours >> char1 >> s.minutes;
+    return istr;
+}
+ 
+int Time::operator< (const Time& s) const
+{
+    if (hours < s.hours)
+        return 0;
+    else
+        if (hours == s.hours)
+            if (minutes < s.minutes)
+                   return 0;
+            else
+                   return 1;
+        else
+            return 1;
+}
+ 
+int Time::operator> (const Time& s) const
+{
+    if (hours > s.hours)
+        return 1;
+    else
+        if (hours == s.hours)
+                if (minutes > s.minutes)
+                   return 1;
+                else
+                   return 0;
+        else
+            return 0;
+}
+ 
+int Time::operator== ( const Time& s) const
+{
+      if (hours == s.hours && minutes == s.minutes)
+      {
+          return 1;
+      }
+      return 0;
+}
+ 
+Time Time::operator+ ( const Time& s ) const
+{
+    int d = hours + s.hours;
+    int c = minutes + s.minutes;
+    Time D(d, c);
+    D.normalize();
+    return D;
+};
+ 
+ 
+Time Time::operator-(const Time& s) const
+{
+    int d = hours - s.hours;
+    int c = minutes - s.minutes;
+    if (c < 0)
+    {
+        c = c + 60;
+        d--;
+    }
+    Time D(d, c);
+    D.normalize();
+    return D;
+}
+ 
+Time Time::operator* (int x) const
+{
+    int d = hours * x;
+    int c = minutes * x;
+    if (c < 0)
+    {
+        c = c + 60;
+        d--;
+    }
+    Time D(d, c);
+    D.normalize();
+    return D;
+}
+ 
+void Time::normalize()
+{
+    if (( hours != 0) && ( minutes != 0))
+    {
+        if (( hours < 0) && ( minutes > 0))
+        {
+            if ( minutes > 0)
+            {
+                minutes = minutes - 60;
+                hours++;
+            }
+        }
+        if (( hours > 0) && ( minutes < 0))
+        {
+            if ( minutes < 0)
+            {
+                minutes = minutes + 60;
+                hours--;
+            }
+        }
+    }
+}
+ 
+ 
+ 
+ 
+int main ()
+{
+    Time T1 (12, 30);
+    cout << "The first time is " << T1 << endl;
+    Time T2 (14, 30);
+    Time T3 (14, 30);
+    Time T4 (1, 45);
+    Time T5;
+    Time T6 (2, 50);
+    cout << "The second time is " << T2 << endl;
+    if (T1 > T2)
+        cout << T1 << " is later than " << T2 << endl;
+    else
+        cout << T2 << " is later than " << T1 << endl;
+ 
+    cout << "The third time is " << T3 << endl;
+    if (T2 == T3)
+        cout << T2 << " is equal to " << T3 << endl;
+    else
+        cout << T2 << " is not equal to " << T3 << endl;
+    if (T2 == T1)
+        cout << T2 << " is equal to " << T1 << endl;
+    else
+        cout << T2 << " is not equal to " << T1 << endl;
+    T5 = T4 + T3;
+    cout << T5 << " = " << T4 << " + " << T3 << endl;
+    T3 = T5 - T4;
+    cout << T3 << " = " << T5 << " - " << T4 << endl;
+    T4 = T6 * 2;
+    cout << T4 << " = " << T6 << " * " << 2 << endl;
+    return 0;
+}
+ 
+/*
+The first time is 12:30
+The second time is 14:30
+14:30 is later than 12:30
+The third time is 14:30
+14:30 is equal to 14:30
+14:30 is not equal to 12:30
+16:15 = 1:45 + 14:30
+14:30 = 16:15 - 1:45
+5:40 = 2:50 * 2
+*/
